@@ -3,7 +3,7 @@
 namespace Cms;
 
 use Cms\Exceptions\BrowserException;
-use GuzzleHttp\Client;
+use GuzzleHttp\Client as HttpClient;
 
 /**
  * Class use HTTP Requests for get HTML content from iacc Cms server
@@ -16,10 +16,19 @@ use GuzzleHttp\Client;
  */
 class Client
 {
+    private $authKey           = null;
+    private $siteId            = null;
+    private $host              = null;
+
     public function __construct($authKey, $siteId, $host)
     {
         $this->authKey     = $authKey;
         $this->siteId      = $siteId;
         $this->host        = $host;
+    }
+
+    public function getListOfArticlesByCategory()
+    {
+        
     }
 }
