@@ -1,0 +1,24 @@
+{
+    "name": "iacc/cms-php",
+    "type": "library",
+    "description": "Php cms library",
+    "keywords": ["iacc-cms"],
+    "homepage": "https://github.com/iacc/cms-php",
+    "authors": [
+        {
+            "name": "Alexey Zazimko",
+            "homepage": "https://github.com/iacc"
+        }
+    ],
+    "version": "1.0.0",
+    "license": "MIT",
+    "require": {
+        "php": ">=5.4.0",
+        "guzzlehttp/guzzle": "~6.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "Cms\\": "src/"
+        }
+    }
+}
