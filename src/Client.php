@@ -2,8 +2,9 @@
 
 namespace Cms;
 
-use Cms\Exceptions\BrowserException;
+use Cms\Exceptions\ClientException;
 use GuzzleHttp\Client as HttpClient;
+use GuzzleHttp\Exception\ServerException;
 
 /**
  * Class use HTTP Requests for get HTML content from iacc Cms server
@@ -16,19 +17,66 @@ use GuzzleHttp\Client as HttpClient;
  */
 class Client
 {
-    private $authKey           = null;
-    private $siteId            = null;
-    private $host              = null;
+    private $client   = null;
+    private $query    = [];
 
-    public function __construct($authKey, $siteId, $host)
+    /**
+     * [__construct description]
+     * @param [type] $cmsHost [description]
+     * @param [type] $cmsSite  [description]
+     * @param [type] $authKey    [description]
+     */
+    public function __construct($cmsHost, $cmsSite, $authKey)
     {
-        $this->authKey     = $authKey;
-        $this->siteId      = $siteId;
-        $this->host        = $host;
+        $this->query['auth_key'] = $authKey;
+        $this->client = new HttpClient(['base_uri' => "http://{$cmsHost}/api/sites/{$cmsSite}/"]);
     }
 
     public function getListOfArticlesByCategory()
     {
-        
+        // $client = new GuzzleHttp\HttpClient();
+    }
+
+    public function getCategory($path)
+    {
+        return $this->getContent("categories/{$path}");
+    }
+
+    private function getContent($path, $query = array())
+    {
+        try
+        {
+          $res = $this->client->request('GET', $path, [
+              'query' => array_merge($this->query, $query)
+          ]);
+        }
+        catch (ServerException $e)
+        {
+            throw new ClientException("CMS: Internal server error");
+        }
+
+        $code = $res->getStatusCode();
+
+        if ($code == 200)
+        {
+            $content = json_decode($res->getBody(), true);
+
+            if (isset($content['result']) && $content['result'] == false)
+                throw new ClientException("CMS: {$content['message']}");
+
+            return $content;
+        }
+        elseif ($code == 403)
+        {
+            throw new ClientException("CMS: URL is forbidden");
+        }
+        elseif ($code == 404)
+        {
+            throw new ClientException("CMS: URL is not found");
+        }
+        else
+        {
+            throw new ClientException("CMS: Returned status code - {$code}");
+        }
     }
 }
