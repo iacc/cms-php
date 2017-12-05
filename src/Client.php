@@ -17,14 +17,14 @@ use GuzzleHttp\Exception\ServerException;
  */
 class Client
 {
-    private $client   = null;
-    private $query    = [];
+    private $client = null;
+    private $query = [];
 
     /**
-     * [__construct description]
-     * @param [type] $cmsHost [description]
-     * @param [type] $cmsSite  [description]
-     * @param [type] $authKey    [description]
+     * Set up HttpClient for request
+     * @param string $cmsHost CMS host
+     * @param string $cmsSite CMS Site ID (PPS etc.)
+     * @param string $authKey CMS Authentication key
      */
     public function __construct($cmsHost, $cmsSite, $authKey)
     {
@@ -49,7 +49,7 @@ class Client
 
     // 指定された path の子孫にあたるカテゴリを返す
     // list_category_dancestors
-    public function getSubCategory($path, $query = [])
+    public function getCategoryContent($path, $query = [])
     {
         return $this->getContent("categories/{$path}/dancestors", $query);
     }
