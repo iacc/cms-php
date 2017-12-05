@@ -32,17 +32,35 @@ class Client
         $this->client = new HttpClient(['base_uri' => "http://{$cmsHost}/api/sites/{$cmsSite}/"]);
     }
 
-    public function getListOfArticlesByCategory()
+    // list_articles
+    public function getArticles($query)
     {
-        // $client = new GuzzleHttp\HttpClient();
+        if (!isset($query['page']) || !isset($query['per']))
+            throw new ClientException("CMS Client: [page] and [per] are required for query");
+
+        return $this->getContent("articles", $query);
     }
 
+    // list_categories
     public function getCategory($path)
     {
         return $this->getContent("categories/{$path}");
     }
 
-    private function getContent($path, $query = array())
+    // 指定された path の子孫にあたるカテゴリを返す
+    // list_category_dancestors
+    public function getSubCategory($path, $query = [])
+    {
+        return $this->getContent("categories/{$path}/dancestors", $query);
+    }
+
+    // find_category_module
+    public function getArticlesByModule($name)
+    {
+        return $this->getContent("article_modules/{$name}");
+    }
+
+    private function getContent($path, $query = [])
     {
         try
         {
@@ -52,7 +70,7 @@ class Client
         }
         catch (ServerException $e)
         {
-            throw new ClientException("CMS: Internal server error");
+            throw new ClientException("CMS Server: Internal server error");
         }
 
         $code = $res->getStatusCode();
@@ -62,21 +80,21 @@ class Client
             $content = json_decode($res->getBody(), true);
 
             if (isset($content['result']) && $content['result'] == false)
-                throw new ClientException("CMS: {$content['message']}");
+                throw new ClientException("CMS Server: {$content['message']}");
 
             return $content;
         }
         elseif ($code == 403)
         {
-            throw new ClientException("CMS: URL is forbidden");
+            throw new ClientException("CMS Server: URL is forbidden");
         }
         elseif ($code == 404)
         {
-            throw new ClientException("CMS: URL is not found");
+            throw new ClientException("CMS Server: URL is not found");
         }
         else
         {
-            throw new ClientException("CMS: Returned status code - {$code}");
+            throw new ClientException("CMS Server: Returned status code - {$code}");
         }
     }
 }
