@@ -41,6 +41,12 @@ class Client
         return $this->getContent("articles", $query);
     }
 
+    // find_article
+    public function getArticleById($id, $query = [])
+    {
+        return $this->getContent("articles/{$id}", $query);
+    }
+
     // list_categories
     public function getCategory($path)
     {
