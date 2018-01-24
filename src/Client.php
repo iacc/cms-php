@@ -52,6 +52,11 @@ class Client
     {
         return $this->getContent("categories/{$path}");
     }
+    
+    public function getSubCategory($query = [])
+    {
+        return $this->getContent("categories", $query);
+    }
 
     // 指定された path の子孫にあたるカテゴリを返す
     // list_category_dancestors
